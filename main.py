@@ -50,7 +50,11 @@ def log_msg(msgs):
 
 def watch_socket(s: socket.socket):
     while True:
-        log_msg([s.recv(2048).decode()])
+        try:
+            log_msg([s.recv(2048).decode()])  # I can't find any documentation about what sorts of errors this can throw
+        except Exception as e:  # So I'm doing this awfulness.
+            # I literally hate Python's docs. I wish it were more like Java's. Java is soo good.
+            print(e)
 
 
 def send_to_socket(s: socket.socket, msg):
@@ -69,15 +73,19 @@ def host_chat():
     server.listen(5)
     log_msg(["Server created."])
     while True:
-        connection, address = server.accept()
-        print("Connection from " + address[0] + ":" + str(address[1]))
-        print("Listening for data")
-        t = threading.Thread(target=watch_socket, args=(connection, ))
-        t.start()
+        try:
+            connection, address = server.accept()
+            print("Connection from " + address[0] + ":" + str(address[1]))
+            print("Listening for data")
+            t = threading.Thread(target=watch_socket, args=(connection, ), daemon=True)
+            t.start()
 
-        connections.append(connection)
+            connections.append(connection)
+        except Exception as e:  # :(
+            print(e)
 
 
+# TODO: Literally rewrite all handling of user input. This is shit.
 def user_input(_):  # This is a TERRIBLE way of doing this, but this is meant to be a thrown-together program for fun
     global state
     global connections
@@ -87,7 +95,7 @@ def user_input(_):  # This is a TERRIBLE way of doing this, but this is meant to
             state = 1
             log_msg(["Enter the IP address of who you would like to join"])
         if msg == "host":
-            t = threading.Thread(target=host_chat)
+            t = threading.Thread(target=host_chat, daemon=True)
             t.start()
             state = 2
     elif state == 1:  # Deciding who to join
