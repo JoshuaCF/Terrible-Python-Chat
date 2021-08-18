@@ -1,5 +1,3 @@
-import threading
-
 from tkinter import *
 from typing import List
 
@@ -40,7 +38,7 @@ class ChatWindow:
 
     window: Tk
     chat_box: Text
-    input_box: Text
+    input_box: Entry
 
     def __init__(self):
         self.window = Tk()
@@ -51,20 +49,24 @@ class ChatWindow:
         self.chat_box.config(state=DISABLED, width=140, height=50, wrap=WORD)
         self.chat_box.pack(side=TOP, padx=4, pady=4)
 
-        self.input_box = Text(self.window, **self.text_style)
-        self.input_box.config(width=140, height=10, wrap=WORD)
+        self.input_box = Entry(self.window, **self.text_style)
+        self.input_box.config(width=140)
         self.input_box.pack(side=TOP, padx=4, pady=4)
 
     def log_msg(self, msgs: List[str]):
         self.chat_box.config(state=NORMAL)
 
+        prev_view = self.chat_box.yview()
+
         for msg in msgs:
             self.chat_box.insert(END, msg + "\n")
 
+        if prev_view[1] == 1:
+            self.chat_box.yview_moveto(1)
         self.chat_box.config(state=DISABLED)
 
     def clear_entry(self):
-        self.input_box.delete("1.0", END)
+        self.input_box.delete(0, END)
 
     def get_entry(self) -> str:
-        return self.input_box.get("1.0", END)
+        return self.input_box.get()

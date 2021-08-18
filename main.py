@@ -9,6 +9,9 @@ class InputHandler:
     chat_window: ChatWindow
 
     connected: bool
+    naming: bool
+
+    name: str
 
     def __init__(self, net_handler, chat_window):
         self.net_handler = net_handler
@@ -17,12 +20,20 @@ class InputHandler:
         self.chat_window.input_box.bind("<Return>", self.handle_input)
 
         self.connected = False
+        self.naming = True
 
     def handle_input(self, _):
-        msg = self.chat_window.get_entry()[0:-1]
+        msg = self.chat_window.get_entry()
         self.chat_window.clear_entry()
 
-        if self.connected:
+        if self.naming:
+            self.name = msg
+            self.naming = False
+
+            self.chat_window.log_msg(
+                ["Type 'host' to host a chat, or type in the ip address of a host you would like to join."])
+        elif self.connected:
+            msg = "<" + self.name + ">" + " " + msg
             self.net_handler.broadcast(msg)
             if self.net_handler.hosting:
                 self.chat_window.log_msg([msg])
@@ -44,7 +55,7 @@ def main():
 
     InputHandler(net_handler, chat_window)
 
-    chat_window.log_msg(["Type 'host' to host a chat, or type in the ip address of a host you would like to join."])
+    chat_window.log_msg(["Enter a name to go by."])
     chat_window.window.mainloop()
 
 

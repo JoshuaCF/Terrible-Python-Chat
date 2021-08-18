@@ -28,12 +28,12 @@ class NetworkHandler:
     def monitor_socket(self, s: socket.socket):
         while True:
             try:
+                msg = s.recv(4096).decode()
                 if self.hosting:
-                    msg = s.recv(4096).decode()
                     self.chat_window.log_msg([msg])
                     self.broadcast(msg)
                 else:
-                    self.chat_window.log_msg([s.recv(4096).decode()])
+                    self.chat_window.log_msg([msg])
             except Exception as e:
                 print(e)
 
