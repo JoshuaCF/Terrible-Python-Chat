@@ -41,17 +41,22 @@ class ChatWindow:
     input_box: Entry
 
     def __init__(self):
+        # TODO: Make default size based on native resolution
+
         self.window = Tk()
         self.window.config(background=self.bg_color)
         self.window.title("Chat with friends!!!! w")
 
         self.chat_box = Text(self.window, **self.text_style)
-        self.chat_box.config(state=DISABLED, width=140, height=50, wrap=WORD)
+        self.chat_box.config(state=DISABLED, width=140, height=50, wrap=WORD)  # TODO: make shit resize
         self.chat_box.pack(side=TOP, padx=4, pady=4)
 
         self.input_box = Entry(self.window, **self.text_style)
         self.input_box.config(width=140)
         self.input_box.pack(side=TOP, padx=4, pady=4)
+
+        # TODO: Make chat log support colors
+        # TODO: Add name box and color wheel
 
     def log_msg(self, msgs: List[str]):
         self.chat_box.config(state=NORMAL)

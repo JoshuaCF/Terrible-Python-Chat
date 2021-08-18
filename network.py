@@ -41,6 +41,7 @@ class NetworkHandler:
                     s.close()
                     self.connections.remove(s)
 
+                    # TODO: Reset the state so the user doesn't have to
                     dc_msg = "[SERVER] " + address[0] + " has disconnected."
                     self.broadcast(dc_msg)
                     self.chat_window.log_msg([dc_msg])
