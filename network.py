@@ -34,8 +34,21 @@ class NetworkHandler:
                     self.broadcast(msg)
                 else:
                     self.chat_window.log_msg([msg])
-            except Exception as e:
+            except ConnectionResetError as e:
                 print(e)
+                if self.hosting:
+                    address = s.getsockname()
+                    s.close()
+                    self.connections.remove(s)
+
+                    dc_msg = "[SERVER] " + address[0] + " has disconnected."
+                    self.broadcast(dc_msg)
+                    self.chat_window.log_msg([dc_msg])
+                else:
+                    self.connections.remove(s)
+                    s.close()
+                    self.chat_window.log_msg(["Connection to the server has been lost. Please restart the program."])
+                break
 
     def host_chat(self):
         self.hosting = True
@@ -58,7 +71,7 @@ class NetworkHandler:
                 monitor_thread = threading.Thread(target=self.monitor_socket, args=(connection, ), daemon=True)
                 monitor_thread.start()
 
-                connect_msg = "[SERVER] " + address[0] + ":" + str(address[1]) + " has connected."
+                connect_msg = "[SERVER] " + address[0] + ":" + " has connected."
 
                 self.chat_window.log_msg([connect_msg])
                 self.broadcast(connect_msg)
