@@ -71,7 +71,7 @@ class NetworkHandler:
                 monitor_thread = threading.Thread(target=self.monitor_socket, args=(connection, ), daemon=True)
                 monitor_thread.start()
 
-                connect_msg = "[SERVER] " + address[0] + ":" + " has connected."
+                connect_msg = "[SERVER] " + address[0] + " has connected."
 
                 self.chat_window.log_msg([connect_msg])
                 self.broadcast(connect_msg)
