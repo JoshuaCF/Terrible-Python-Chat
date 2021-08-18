@@ -1,79 +1,51 @@
-import socket
 import threading
 
-
-state = 0
-
-
-def watch_socket(s: socket.socket):
-    while True:
-        try:
-            log_msg([s.recv(2048).decode()])  # I can't find any documentation about what sorts of errors this can throw
-        except Exception as e:  # So I'm doing this awfulness.
-            # I literally hate Python's docs. I wish it were more like Java's. Java is soo good.
-            print(e)
+from gui import ChatWindow
+from network import NetworkHandler
 
 
-def send_to_socket(s: socket.socket, msg):
-    s.send(msg.encode())
+class InputHandler:
+    net_handler: NetworkHandler
+    chat_window: ChatWindow
 
+    connected: bool
 
-connections = []
+    def __init__(self, net_handler, chat_window):
+        self.net_handler = net_handler
+        self.chat_window = chat_window
 
+        self.chat_window.input_box.bind("<Return>", self.handle_input)
 
-def host_chat():
-    global connections
-    log_msg(["Creating chat host..."])
-    server = socket.socket()
-    server.bind(("", 25565))
+        self.connected = False
 
-    server.listen(5)
-    log_msg(["Server created."])
-    while True:
-        try:
-            connection, address = server.accept()
-            print("Connection from " + address[0] + ":" + str(address[1]))
-            print("Listening for data")
-            t = threading.Thread(target=watch_socket, args=(connection, ), daemon=True)
-            t.start()
+    def handle_input(self, _):
+        msg = self.chat_window.get_entry()[0:-1]
+        self.chat_window.clear_entry()
 
-            connections.append(connection)
-        except Exception as e:  # :(
-            print(e)
-
-
-# TODO: Literally rewrite all handling of user input. This is shit.
-def user_input(_):  # This is a TERRIBLE way of doing this, but this is meant to be a thrown-together program for fun
-    global state
-    global connections
-    msg = inputbox.get("1.0", END)[0:-1]
-    if state == 0:  # Determining host or join
-        if msg == "join":
-            state = 1
-            log_msg(["Enter the IP address of who you would like to join"])
-        if msg == "host":
-            t = threading.Thread(target=host_chat, daemon=True)
-            t.start()
-            state = 2
-    elif state == 1:  # Deciding who to join
-        log_msg(["Attempting to connect to " + msg])
-        s = socket.socket()
-        s.connect((msg, 25565))
-        t = threading.Thread(target=watch_socket, args=(s, ))
-        t.start()
-        connections.append(s)
-        log_msg(["Connected"])
-        state = 2
-    elif state == 2:  # Hosting/has joined a chat
-        log_msg([msg])
-        for s in connections:
-            send_to_socket(s, msg)
-
-    inputbox.delete("1.0", END)
+        if self.connected:
+            self.net_handler.broadcast(msg)
+            if self.net_handler.hosting:
+                self.chat_window.log_msg([msg])
+        else:
+            try:
+                if msg == "host":
+                    host_thread = threading.Thread(target=self.net_handler.host_chat, daemon=True)
+                    host_thread.start()
+                else:
+                    self.net_handler.connect(msg)
+                self.connected = True
+            except Exception as e:
+                print(e)
 
 
 def main():
-    pass
+    chat_window = ChatWindow()
+    net_handler = NetworkHandler(chat_window)
+
+    InputHandler(net_handler, chat_window)
+
+    chat_window.log_msg(["Type 'host' to host a chat, or type in the ip address of a host you would like to join."])
+    chat_window.window.mainloop()
 
 
 if __name__ == "__main__":

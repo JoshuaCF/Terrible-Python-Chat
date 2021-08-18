@@ -1,4 +1,7 @@
+import threading
+
 from tkinter import *
+from typing import List
 
 
 class ChatWindow:
@@ -45,21 +48,23 @@ class ChatWindow:
         self.window.title("Chat with friends!!!! w")
 
         self.chat_box = Text(self.window, **self.text_style)
-        self.chat_box.insert(END, "Would you like to host or join a chat? Type 'host' or 'join'\n")
-        self.chat_box.config(state=DISABLED, width=140, height=50)
+        self.chat_box.config(state=DISABLED, width=140, height=50, wrap=WORD)
         self.chat_box.pack(side=TOP, padx=4, pady=4)
 
         self.input_box = Text(self.window, **self.text_style)
-        self.input_box.config(width=140, height=10)
-        # self.input_box.bind("<Return>", user_input)
+        self.input_box.config(width=140, height=10, wrap=WORD)
         self.input_box.pack(side=TOP, padx=4, pady=4)
 
-        self.window.mainloop()
-
-    def log_msg(self, msgs):
+    def log_msg(self, msgs: List[str]):
         self.chat_box.config(state=NORMAL)
 
         for msg in msgs:
             self.chat_box.insert(END, msg + "\n")
 
         self.chat_box.config(state=DISABLED)
+
+    def clear_entry(self):
+        self.input_box.delete("1.0", END)
+
+    def get_entry(self) -> str:
+        return self.input_box.get("1.0", END)
