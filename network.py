@@ -37,7 +37,7 @@ class NetworkHandler:
             except Exception as e:
                 print(e)
 
-    def host_chat(self):  # TODO: Fix. Connection is aborted for some reason.
+    def host_chat(self):
         self.hosting = True
 
         self.chat_window.log_msg(["Hosting chat..."])
