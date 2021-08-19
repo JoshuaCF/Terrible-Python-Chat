@@ -11,7 +11,7 @@ class NetworkHandler:
     connections: List[socket.socket]
     hosting: bool
 
-    chat_window: "ChatWindow"  # I don't really know what to call this variable.
+    chat_window: "ChatWindow"
 
     def __init__(self, chat_window: "ChatWindow"):
         self.chat_window = chat_window
@@ -30,10 +30,10 @@ class NetworkHandler:
             try:
                 msg = s.recv(4096).decode()
                 if self.hosting:
-                    self.chat_window.log_msg([msg])
+                    self.chat_window.log_msg(msg)
                     self.broadcast(msg)
                 else:
-                    self.chat_window.log_msg([msg])
+                    self.chat_window.log_msg(msg)
             except ConnectionResetError as e:
                 print(e)
                 if self.hosting:
@@ -44,17 +44,17 @@ class NetworkHandler:
                     # TODO: Reset the state so the user doesn't have to
                     dc_msg = "[SERVER] " + address[0] + " has disconnected."
                     self.broadcast(dc_msg)
-                    self.chat_window.log_msg([dc_msg])
+                    self.chat_window.log_msg(dc_msg)
                 else:
                     self.connections.remove(s)
                     s.close()
-                    self.chat_window.log_msg(["Connection to the server has been lost. Please restart the program."])
+                    self.chat_window.log_msg("Connection to the server has been lost. Please restart the program.")
                 break
 
     def host_chat(self):
         self.hosting = True
 
-        self.chat_window.log_msg(["Hosting chat..."])
+        self.chat_window.log_msg("Hosting chat...")
 
         try:
             s = socket.socket()
@@ -64,7 +64,7 @@ class NetworkHandler:
             s.bind(("", 25565))
 
             s.listen(3)
-            self.chat_window.log_msg(["Done!"])
+            self.chat_window.log_msg("Done!")
             while True:
                 connection, address = s.accept()
 
@@ -74,7 +74,7 @@ class NetworkHandler:
 
                 connect_msg = "[SERVER] " + address[0] + " has connected."
 
-                self.chat_window.log_msg([connect_msg])
+                self.chat_window.log_msg(connect_msg)
                 self.broadcast(connect_msg)
         except Exception as e:
             print(e)
