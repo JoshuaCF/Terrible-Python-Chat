@@ -1,10 +1,6 @@
 # Terrible-Python-Chat
-This is a "chat application" written in Python. I made this as my second attempt at any program that uses networking. My first one was literally "connect, receive message, disconnect". This one maintains a connection and transmits data back and forth. It is terrible, has no error handling, and very little feedback if things go wrong. Don't actually use this.
+This is a chat application written in Python. It's written as a test of what I've learned when it comes to networking and doing any programming involving the internet.
 
-If you actually want to try this out, do the following:
-Have one person open the app and type "host" without the quotation marks.
-Have another person open the app and type "join" without the quotation marks.
+It's genuinely not that great of a chat program, and I have no intentions of making it actually useful. There are already good programs for chat. I want to make it usable, just to see if I can.
 
-The second person must then also type the IP address of the host. Make sure there are no extra newlines, by default when you hit enter, chat is cleared except for an extra newline. I don't know why.
-
-Once you've done this, you should have a connection established and any messages sent will appear on the chat logs of both people. Enjoy this awful program.
+The error handling is poor, and little indication is given of anything go wrong, but as of writing this can support live group chats with one person acting as the server and everyone else being clients connected to the server. It uses port 25565 because my friends and I already have opened that port for playing Minecraft, so it's easiest to just use an already open and forwarded port that nothing else should be using.
