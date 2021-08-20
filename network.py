@@ -86,7 +86,7 @@ class NetworkHandler:
 
                     dc_msg = "[SERVER] " + address[0] + " has disconnected."
                     server_colors = [ColorData(1, 7, "#CC3333"), ColorData(8, len(dc_msg), "#33AA33")]
-                    self.broadcast(encode_packet(dc_msg, server_colors))  # TODO: rainbow text
+                    self.broadcast(encode_packet(dc_msg, server_colors))
                     self.chat_window.log_msg(dc_msg, server_colors)
                 else:
                     self.connections.remove(s)

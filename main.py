@@ -1,4 +1,5 @@
 import threading
+from tkinter import colorchooser
 
 from gui import ChatWindow, ColorData
 from network import NetworkHandler, encode_packet
@@ -12,12 +13,16 @@ class InputHandler:
     naming: bool
 
     name: str
+    name_color: str
 
     def __init__(self, net_handler, chat_window):
         self.net_handler = net_handler
         self.chat_window = chat_window
 
         self.chat_window.input_box.bind("<Return>", self.handle_input)
+        self.chat_window.select_color.config(command=self.set_name_color)
+
+        self.name_color = self.chat_window.active_fg
 
         self.connected = False
         self.naming = True
@@ -34,9 +39,9 @@ class InputHandler:
                 "Type 'host' to host a chat, or type in the ip address of a host you would like to join.")
         elif self.connected:
             msg = "<" + self.name + ">" + " " + msg
-            self.net_handler.broadcast(encode_packet(msg))
+            self.net_handler.broadcast(encode_packet(msg, [ColorData(1, len(self.name)+1, self.name_color)]))
             if self.net_handler.hosting:
-                self.chat_window.log_msg(msg)
+                self.chat_window.log_msg(msg, [ColorData(1, len(self.name)+1, self.name_color)])
         else:
             try:
                 if msg == "host":
@@ -47,6 +52,9 @@ class InputHandler:
                 self.connected = True
             except Exception as e:
                 print(e)
+
+    def set_name_color(self):
+        self.name_color = colorchooser.askcolor()[1]
 
 
 def main():

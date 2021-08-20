@@ -48,25 +48,38 @@ class ChatWindow:
                   "insertbackground": active_fg}
 
     window: Tk
+
     chat_box: Text
+
+    bottom_frame: Frame
     input_box: Entry
+    select_color: Button
+
 
     def __init__(self):
         # TODO: Make default size based on native resolution
+        # This probably won't happen because it would be annoying to do it cross-platform
+        # (and I'd rather not have it at all than have it be platform-dependent)
 
         self.window = Tk()
         self.window.config(background=self.bg_color)
-        self.window.title("Chat with friends!!!! w")
+        self.window.title("Python Chat Application")
 
         self.chat_box = Text(self.window, **self.text_style)
         self.chat_box.config(state=DISABLED, width=40, height=8, wrap=WORD)
         self.chat_box.pack(side=TOP, padx=4, pady=4, expand=TRUE, fill=BOTH)
 
-        self.input_box = Entry(self.window, **self.text_style)
-        self.input_box.config(width=40)
-        self.input_box.pack(side=TOP, padx=4, pady=4, expand=FALSE, fill=X)
+        self.bottom_frame = Frame(self.window, **self.frame_style)
 
-        # TODO: Add name box and color wheel
+        self.input_box = Entry(self.bottom_frame, **self.text_style)
+        self.input_box.config(width=40)
+        self.input_box.pack(side=LEFT, padx=4, pady=4, expand=TRUE, fill=X)
+
+        self.select_color = Button(self.bottom_frame, **self.button_style)
+        self.select_color.config(text="Set name color")
+        self.select_color.pack(side=RIGHT, padx=4, pady=4)
+
+        self.bottom_frame.pack(side=TOP, expand=FALSE, fill=BOTH, ipadx=0, ipady=0, padx=0, pady=0)
 
     def log_msg(self, msg: str, colors: Union[List[ColorData], str] = None):
         self.chat_box.config(state=NORMAL)
