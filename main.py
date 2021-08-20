@@ -1,7 +1,7 @@
 import threading
 
 from gui import ChatWindow, ColorData
-from network import NetworkHandler
+from network import NetworkHandler, encode_packet
 
 
 class InputHandler:
@@ -34,7 +34,7 @@ class InputHandler:
                 "Type 'host' to host a chat, or type in the ip address of a host you would like to join.")
         elif self.connected:
             msg = "<" + self.name + ">" + " " + msg
-            self.net_handler.broadcast(msg)
+            self.net_handler.broadcast(encode_packet(msg))
             if self.net_handler.hosting:
                 self.chat_window.log_msg(msg)
         else:
@@ -53,7 +53,8 @@ def main():
     chat_window = ChatWindow()
     net_handler = NetworkHandler(chat_window)
 
-    InputHandler(net_handler, chat_window)
+    input_handler = InputHandler(net_handler, chat_window)
+    net_handler.input_handler = input_handler
 
     chat_window.log_msg("Enter a name to go by.")
     chat_window.window.mainloop()
